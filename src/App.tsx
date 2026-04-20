@@ -1,41 +1,50 @@
-// src/App.tsx
 import { useState } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
-import PetCard from './components/PetCard'
+import Footer from './components/Footer'
+import CartSidebar from './components/CartSidebar'
+import Home from './pages/Home'
+import Store from './pages/Store'
+import Vet from './pages/Vet'
 import './App.css'
 
-// 👆 TypeScript type — shape of one log entry
-export type Log = {
+export type CartItem = {
   id: number
-  type: 'feeding' | 'vet' | 'walk' | 'medicine'
-  note: string
-  time: string
+  name: string
+  price: number
+  img: string
 }
 
 function App() {
-  // 🧠 CONCEPT: useState — this is your app's memory
-  // logs is the current value, setLogs is the function to update it
-  const [logs, setLogs] = useState<Log[]>([
-    { id: 1, type: 'feeding', note: 'Morning kibble', time: '8:00 AM' },
-    { id: 2, type: 'walk', note: 'Park walk, 20 min', time: '9:30 AM' },
-    { id: 3, type: 'medicine', note: 'Flea tablet', time: '10:00 AM' },
-  ])
+  const [cart, setCart] = useState<CartItem[]>([])
+  const [cartOpen, setCartOpen] = useState(false)
 
-  // 🧠 CONCEPT: lifting state up — this function lives in App
-  // and gets passed DOWN to AddLogForm as a prop
-  const addLog = (newLog: Omit<Log, 'id'>) => {
-    setLogs(prev => [...prev, { ...newLog, id: Date.now() }])
+  const addToCart = (item: CartItem) => {
+    setCart(prev => [...prev, { ...item, id: Date.now() + Math.random() }])
+  }
+
+  const removeFromCart = (id: number) => {
+    setCart(prev => prev.filter(i => i.id !== id))
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0d0d0d' }}>
-      {/* Passing petName as a PROP to Navbar */}
-      <Navbar petName="Buddy 🐶" />
-
-      <main style={{ maxWidth: '600px', margin: '0 auto', padding: '100px 20px 40px' }}>
-        {/* Passing logs and addLog as PROPS to PetCard */}
-        <PetCard logs={logs} onAdd={addLog} />
-      </main>
+    <div>
+      <Navbar cartCount={cart.length} onCartClick={() => setCartOpen(true)} />
+      <div className="page-wrapper">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/store" element={<Store onAddToCart={addToCart} />} />
+          <Route path="/vet" element={<Vet />} />
+        </Routes>
+        <Footer />
+      </div>
+      {cartOpen && (
+        <CartSidebar
+          items={cart}
+          onClose={() => setCartOpen(false)}
+          onRemove={removeFromCart}
+        />
+      )}
     </div>
   )
 }

@@ -1,28 +1,54 @@
-// 🧠 CONCEPT: Props — data passed from parent (App) to child (Navbar)
-// We define what props this component accepts using a TypeScript type
+import { NavLink } from 'react-router-dom'
 
 type NavbarProps = {
-    petName: string   // App passes this in as <Navbar petName="Buddy" />
+  cartCount: number
+  onCartClick: () => void
 }
 
-export default function Navbar({ petName }: NavbarProps) {
-    return (
-        <nav style={{
-            position: 'fixed', top: 0, left: 0, right: 0,
-            background: 'rgba(255,255,255,0.04)',
-            backdropFilter: 'blur(20px)',
-            borderBottom: '1px solid rgba(255,255,255,0.08)',
-            padding: '0 24px', height: '60px',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            fontFamily: 'sans-serif',
-        }}>
-            <span style={{ color: '#fff', fontSize: '18px', fontWeight: 600 }}>
-                🐾 PetCare
-            </span>
-            {/* petName came from App.tsx as a prop — this is how data flows DOWN */}
-            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>
-                Tracking: {petName}
-            </span>
-        </nav>
-    )
+export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
+  return (
+    <header className="navbar">
+      <div className="container">
+        <div className="navbar__inner">
+          {/* Logo */}
+          <NavLink to="/" className="navbar__logo">
+            <span className="navbar__logo-icon">🐾</span>
+            <span className="gradient-text">PawLife</span>
+          </NavLink>
+
+          {/* Nav links */}
+          <nav>
+            <ul className="navbar__nav">
+              <li>
+                <NavLink to="/" end className={({ isActive }) => isActive ? 'active' : ''}>
+                  🏠 Home
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/store" className={({ isActive }) => isActive ? 'active' : ''}>
+                  🛒 Pet Store
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/vet" className={({ isActive }) => isActive ? 'active' : ''}>
+                  💉 Find a Vet
+                </NavLink>
+              </li>
+            </ul>
+          </nav>
+
+          {/* Cart */}
+          <div className="navbar__cta">
+            <button className="navbar__cart" onClick={onCartClick} aria-label="Open cart">
+              🛍️
+              {cartCount > 0 && (
+                <span className="navbar__cart-badge">{cartCount}</span>
+              )}
+            </button>
+            <NavLink to="/store" className="btn btn-primary btn-sm">Shop Now</NavLink>
+          </div>
+        </div>
+      </div>
+    </header>
+  )
 }
