@@ -1,120 +1,42 @@
+// src/App.tsx
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import Navbar from './components/Navbar'
+import PetCard from './components/PetCard'
 import './App.css'
 
+// 👆 TypeScript type — shape of one log entry
+export type Log = {
+  id: number
+  type: 'feeding' | 'vet' | 'walk' | 'medicine'
+  note: string
+  time: string
+}
+
 function App() {
-  const [count, setCount] = useState(0)
+  // 🧠 CONCEPT: useState — this is your app's memory
+  // logs is the current value, setLogs is the function to update it
+  const [logs, setLogs] = useState<Log[]>([
+    { id: 1, type: 'feeding', note: 'Morning kibble', time: '8:00 AM' },
+    { id: 2, type: 'walk', note: 'Park walk, 20 min', time: '9:30 AM' },
+    { id: 3, type: 'medicine', note: 'Flea tablet', time: '10:00 AM' },
+  ])
+
+  // 🧠 CONCEPT: lifting state up — this function lives in App
+  // and gets passed DOWN to AddLogForm as a prop
+  const addLog = (newLog: Omit<Log, 'id'>) => {
+    setLogs(prev => [...prev, { ...newLog, id: Date.now() }])
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div style={{ minHeight: '100vh', background: '#0d0d0d' }}>
+      {/* Passing petName as a PROP to Navbar */}
+      <Navbar petName="Buddy 🐶" />
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <main style={{ maxWidth: '600px', margin: '0 auto', padding: '100px 20px 40px' }}>
+        {/* Passing logs and addLog as PROPS to PetCard */}
+        <PetCard logs={logs} onAdd={addLog} />
+      </main>
+    </div>
   )
 }
 
